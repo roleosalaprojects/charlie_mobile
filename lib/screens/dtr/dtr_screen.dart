@@ -212,11 +212,9 @@ class _DtrScreenState extends State<DtrScreen> {
             const SizedBox(height: 12),
             Row(
               children: [
-                _detailItem('Clock In', Fmt.time(record.clockIn)),
-                const SizedBox(width: 24),
-                _detailItem('Clock Out', Fmt.time(record.clockOut)),
-                const SizedBox(width: 24),
-                _detailItem('Hours', record.hoursWorked?.toStringAsFixed(1) ?? '--'),
+                Expanded(child: _detailItem('Clock In', _shortTime(record.clockIn ?? '--'))),
+                Expanded(child: _detailItem('Clock Out', _shortTime(record.clockOut ?? '--'))),
+                Expanded(child: _detailItem('Hours', record.hoursWorked?.toStringAsFixed(1) ?? '--')),
               ],
             ),
           ],
