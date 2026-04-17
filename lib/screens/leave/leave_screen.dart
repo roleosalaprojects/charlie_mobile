@@ -62,7 +62,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
               const Text('My Balances', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               SizedBox(
-                height: 90,
+                height: 76,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: lp.balances.length,

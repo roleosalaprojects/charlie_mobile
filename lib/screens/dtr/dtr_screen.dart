@@ -68,9 +68,9 @@ class _DtrScreenState extends State<DtrScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _chip('In', dtr.today!.clockIn!, AppColors.success),
+                          Flexible(child: _chip('In', _shortTime(dtr.today!.clockIn!), AppColors.success)),
                           const SizedBox(width: 16),
-                          _chip('Out', dtr.today!.clockOut ?? '--', AppColors.danger),
+                          Flexible(child: _chip('Out', _shortTime(dtr.today!.clockOut ?? '--'), AppColors.danger)),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -250,9 +250,21 @@ class _DtrScreenState extends State<DtrScreen> {
   }
 
   void _showDayDetail(DateTime day) {
-    // Future dates: navigate to file leave
-    if (day.isAfter(DateTime.now())) {
-      // Detail card handles this via the button
+    // Detail card below calendar handles display
+  }
+
+  String _shortTime(String raw) {
+    if (raw == '--') return raw;
+    // If already short (e.g. "09:00 AM"), return as-is
+    if (!raw.contains('T') && !raw.contains('-')) return raw;
+    // Parse ISO datetime
+    try {
+      final dt = DateTime.parse(raw).toLocal();
+      final h = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
+      final ampm = dt.hour >= 12 ? 'PM' : 'AM';
+      return '${h.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')} $ampm';
+    } catch (_) {
+      return raw;
     }
   }
 }

@@ -94,9 +94,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _timeChip('In', dtr.today!.clockIn!, AppColors.success),
+                          Flexible(child: _timeChip('In', _shortTime(dtr.today!.clockIn!), AppColors.success)),
                           const SizedBox(width: 16),
-                          _timeChip('Out', dtr.today!.clockOut ?? '--', AppColors.danger),
+                          Flexible(child: _timeChip('Out', _shortTime(dtr.today!.clockOut ?? '--'), AppColors.danger)),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -119,7 +119,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const Text('Leave Balances', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               SizedBox(
-                height: 90,
+                height: 76,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: leave.balances.length,
@@ -176,5 +176,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ],
     );
+  }
+
+  String _shortTime(String raw) {
+    if (raw == '--') return raw;
+    if (!raw.contains('T') && !raw.contains('-')) return raw;
+    try {
+      final dt = DateTime.parse(raw).toLocal();
+      final h = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
+      final ampm = dt.hour >= 12 ? 'PM' : 'AM';
+      return '${h.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')} $ampm';
+    } catch (_) {
+      return raw;
+    }
   }
 }
