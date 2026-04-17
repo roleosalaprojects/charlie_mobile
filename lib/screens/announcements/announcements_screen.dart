@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/announcement_provider.dart';
 import '../../widgets/announcement_card.dart';
+import '../../widgets/empty_state.dart';
 
 class AnnouncementsScreen extends StatefulWidget {
   const AnnouncementsScreen({super.key});
@@ -43,7 +44,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
       body: RefreshIndicator(
         onRefresh: () => ap.fetchFeed(refresh: true),
         child: ap.announcements.isEmpty && !ap.loading
-            ? const Center(child: Text('No announcements yet.', style: TextStyle(color: Colors.grey)))
+            ? EmptyState(icon: Icons.campaign_outlined, title: 'No announcements yet', subtitle: 'Pull down to refresh', onAction: () => ap.fetchFeed(refresh: true))
             : ListView.builder(
                 controller: _scrollCtrl,
                 padding: const EdgeInsets.all(12),

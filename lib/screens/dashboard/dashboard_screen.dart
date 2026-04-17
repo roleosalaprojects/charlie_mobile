@@ -19,7 +19,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DtrProvider>().fetchToday();
+      final dtrProv = context.read<DtrProvider>();
+      dtrProv.syncPending(); // sync any offline clock actions
+      dtrProv.fetchToday();
       context.read<LeaveProvider>().fetchBalances();
     });
   }
@@ -126,9 +128,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
             ],
+            const SizedBox(height: 20),
+
+            // Quick Actions
+            const Text('Quick Actions', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _quickAction(Icons.receipt_long, 'Payslips', '/payslips'),
+                _quickAction(Icons.account_balance_wallet, 'Loans', '/loans'),
+                _quickAction(Icons.schedule, 'File OT', '/file-overtime'),
+                _quickAction(Icons.receipt, 'Expense', '/file-expense'),
+                if (auth.user?.isManager ?? false)
+                  _quickAction(Icons.approval, 'Approvals', '/approvals'),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _quickAction(IconData icon, String label, String route) {
+    return ActionChip(
+      avatar: Icon(icon, size: 18, color: AppColors.primary),
+      label: Text(label, style: const TextStyle(fontSize: 13)),
+      onPressed: () => Navigator.pushNamed(context, route),
+      backgroundColor: AppColors.primary.withValues(alpha: 0.06),
+      side: BorderSide(color: AppColors.primary.withValues(alpha: 0.2)),
     );
   }
 

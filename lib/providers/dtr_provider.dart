@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../config/api.dart';
@@ -10,12 +11,21 @@ class DtrProvider extends ChangeNotifier {
   bool _loading = false;
   String? _error;
   String? _message;
+  bool _hasPendingSync = false;
+  String? _pendingAction; // 'clock-in' or 'clock-out'
+  DateTime? _pendingTime;
 
   TodayDtr? get today => _today;
   List<DailyTimeRecord> get history => _history;
   bool get loading => _loading;
   String? get error => _error;
   String? get message => _message;
+  bool get hasPendingSync => _hasPendingSync;
+
+  Future<bool> _isOnline() async {
+    final result = await Connectivity().checkConnectivity();
+    return !result.contains(ConnectivityResult.none);
+  }
 
   Future<void> fetchToday() async {
     try {
@@ -30,6 +40,18 @@ class DtrProvider extends ChangeNotifier {
     _loading = true;
     _error = null;
     notifyListeners();
+
+    if (!await _isOnline()) {
+      // Queue offline
+      _pendingAction = 'clock-in';
+      _pendingTime = DateTime.now();
+      _hasPendingSync = true;
+      _message = 'Clocked in offline at ${_pendingTime!.hour.toString().padLeft(2, '0')}:${_pendingTime!.minute.toString().padLeft(2, '0')}. Will sync when online.';
+      _today = TodayDtr(clockIn: _formatTime(_pendingTime!), isClockedIn: true);
+      _loading = false;
+      notifyListeners();
+      return true;
+    }
 
     try {
       final res = await _dio.post('/dtr/clock-in');
@@ -51,6 +73,21 @@ class DtrProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
+    if (!await _isOnline()) {
+      _pendingAction = 'clock-out';
+      _pendingTime = DateTime.now();
+      _hasPendingSync = true;
+      _message = 'Clocked out offline at ${_formatTime(_pendingTime!)}. Will sync when online.';
+      _today = TodayDtr(
+        clockIn: _today?.clockIn,
+        clockOut: _formatTime(_pendingTime!),
+        isClockedIn: false,
+      );
+      _loading = false;
+      notifyListeners();
+      return true;
+    }
+
     try {
       final res = await _dio.post('/dtr/clock-out');
       _message = res.data['message'];
@@ -63,6 +100,24 @@ class DtrProvider extends ChangeNotifier {
       _loading = false;
       notifyListeners();
       return false;
+    }
+  }
+
+  /// Try to sync any pending offline clock action
+  Future<void> syncPending() async {
+    if (!_hasPendingSync || _pendingAction == null) return;
+    if (!await _isOnline()) return;
+
+    try {
+      await _dio.post('/dtr/$_pendingAction');
+      _hasPendingSync = false;
+      _pendingAction = null;
+      _pendingTime = null;
+      _message = 'Offline record synced successfully.';
+      await fetchToday();
+      notifyListeners();
+    } catch (_) {
+      // Keep pending, will retry next time
     }
   }
 
@@ -92,5 +147,11 @@ class DtrProvider extends ChangeNotifier {
     } catch (_) {
       return [];
     }
+  }
+
+  String _formatTime(DateTime dt) {
+    final h = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
+    final ampm = dt.hour >= 12 ? 'PM' : 'AM';
+    return '${h.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')} $ampm';
   }
 }
