@@ -41,19 +41,48 @@ class CharlieApp extends StatelessWidget {
         theme: ThemeData(
           colorSchemeSeed: AppColors.primary,
           useMaterial3: true,
-          scaffoldBackgroundColor: const Color(0xFFF9F9F9),
+          scaffoldBackgroundColor: const Color(0xFFF5F6FA),
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             foregroundColor: AppColors.dark,
-            elevation: 0.5,
+            elevation: 0,
             centerTitle: true,
+            surfaceTintColor: Colors.transparent,
+            titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.dark),
           ),
           cardTheme: CardThemeData(
             elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Colors.grey[200]!),
+            color: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: const Color(0xFFF5F6FA),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
+          ),
+          navigationBarTheme: NavigationBarThemeData(
+            elevation: 0,
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+            labelTextStyle: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primary);
+              }
+              return TextStyle(fontSize: 11, color: Colors.grey[500]);
+            }),
           ),
           brightness: Brightness.light,
         ),
@@ -61,11 +90,29 @@ class CharlieApp extends StatelessWidget {
           colorSchemeSeed: AppColors.primary,
           useMaterial3: true,
           brightness: Brightness.dark,
+          appBarTheme: const AppBarTheme(
+            elevation: 0,
+            centerTitle: true,
+            surfaceTintColor: Colors.transparent,
+            titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
+          ),
           cardTheme: CardThemeData(
             elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: Color(0xFF2D2D2D)),
+            surfaceTintColor: Colors.transparent,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.primary, width: 1.5)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
             ),
           ),
         ),
@@ -134,17 +181,30 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.business, size: 64, color: AppColors.primary),
-            SizedBox(height: 16),
-            Text('Charlie HRMS', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 24),
-            CircularProgressIndicator(color: AppColors.primary),
-          ],
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF0078D4), Color(0xFF00BCF2)]),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 72, height: 72,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 20)],
+                ),
+                child: const Center(child: Text('C', style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800, color: AppColors.primary))),
+              ),
+              const SizedBox(height: 20),
+              const Text('Charlie HRMS', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.5)),
+              const SizedBox(height: 28),
+              const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white)),
+            ],
+          ),
         ),
       ),
     );
