@@ -31,7 +31,10 @@ class DtrProvider extends ChangeNotifier {
     try {
       final res = await _dio.get('/dtr/today');
       final data = res.data['data'];
-      _today = data != null ? TodayDtr.fromJson(data) : TodayDtr(isClockedIn: false);
+      final isClockedIn = res.data['clocked_in'] ?? false;
+      _today = data != null
+          ? TodayDtr.fromJson({...data, 'is_clocked_in': isClockedIn})
+          : TodayDtr(isClockedIn: false);
       notifyListeners();
     } catch (_) {}
   }
@@ -97,6 +100,46 @@ class DtrProvider extends ChangeNotifier {
       return true;
     } on DioException catch (e) {
       _error = e.response?.data?['message'] ?? 'Clock out failed.';
+      _loading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> breakOut() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final res = await _dio.post('/dtr/break-out');
+      _message = res.data['message'];
+      await fetchToday();
+      _loading = false;
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      _error = e.response?.data?['message'] ?? 'Break out failed.';
+      _loading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> breakIn() async {
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final res = await _dio.post('/dtr/break-in');
+      _message = res.data['message'];
+      await fetchToday();
+      _loading = false;
+      notifyListeners();
+      return true;
+    } on DioException catch (e) {
+      _error = e.response?.data?['message'] ?? 'Break in failed.';
       _loading = false;
       notifyListeners();
       return false;

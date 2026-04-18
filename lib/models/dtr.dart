@@ -2,6 +2,8 @@ class DailyTimeRecord {
   final int id;
   final String date;
   final String? clockIn;
+  final String? breakStart;
+  final String? breakEnd;
   final String? clockOut;
   final String status;
   final double? hoursWorked;
@@ -12,6 +14,8 @@ class DailyTimeRecord {
     required this.id,
     required this.date,
     this.clockIn,
+    this.breakStart,
+    this.breakEnd,
     this.clockOut,
     required this.status,
     this.hoursWorked,
@@ -24,6 +28,8 @@ class DailyTimeRecord {
       id: json['id'],
       date: json['date'] ?? '',
       clockIn: json['clock_in'],
+      breakStart: json['break_start'],
+      breakEnd: json['break_end'],
       clockOut: json['clock_out'],
       status: json['status'] ?? 'absent',
       hoursWorked: _toDouble(json['hours_worked']),
@@ -43,15 +49,30 @@ class DailyTimeRecord {
 
 class TodayDtr {
   final String? clockIn;
+  final String? breakStart;
+  final String? breakEnd;
   final String? clockOut;
   final String? status;
   final bool isClockedIn;
 
-  TodayDtr({this.clockIn, this.clockOut, this.status, required this.isClockedIn});
+  TodayDtr({
+    this.clockIn,
+    this.breakStart,
+    this.breakEnd,
+    this.clockOut,
+    this.status,
+    required this.isClockedIn,
+  });
+
+  bool get isOnBreak => breakStart != null && breakEnd == null;
+  bool get breakDone => breakStart != null && breakEnd != null;
+  bool get dayComplete => clockIn != null && clockOut != null;
 
   factory TodayDtr.fromJson(Map<String, dynamic> json) {
     return TodayDtr(
       clockIn: json['clock_in'],
+      breakStart: json['break_start'],
+      breakEnd: json['break_end'],
       clockOut: json['clock_out'],
       status: json['status'],
       isClockedIn: json['is_clocked_in'] ?? false,

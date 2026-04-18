@@ -73,8 +73,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundImage: emp?.photoUrl != null ? NetworkImage(emp!.photoUrl!) : null,
-                        child: emp?.photoUrl == null ? const Icon(Icons.person, size: 50) : null,
+                        backgroundImage: (emp?.photoUrl?.isNotEmpty ?? false) ? NetworkImage(emp!.photoUrl!) : null,
+                        child: (emp?.photoUrl?.isEmpty ?? true) ? const Icon(Icons.person, size: 50) : null,
                       ),
                       Positioned(
                         bottom: 0, right: 0,

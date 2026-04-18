@@ -57,8 +57,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundImage: emp?.photoUrl != null ? NetworkImage(emp!.photoUrl!) : null,
-                      child: emp?.photoUrl == null ? const Icon(Icons.person, size: 28) : null,
+                      backgroundImage: (emp?.photoUrl?.isNotEmpty ?? false) ? NetworkImage(emp!.photoUrl!) : null,
+                      child: (emp?.photoUrl?.isEmpty ?? true) ? const Icon(Icons.person, size: 28) : null,
                     ),
                     const SizedBox(width: 16),
                     Expanded(

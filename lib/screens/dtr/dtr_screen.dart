@@ -69,15 +69,34 @@ class _DtrScreenState extends State<DtrScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Flexible(child: _chip('In', _shortTime(dtr.today!.clockIn!), AppColors.success)),
-                          const SizedBox(width: 16),
-                          Flexible(child: _chip('Out', _shortTime(dtr.today!.clockOut ?? '--'), AppColors.danger)),
+                          if (dtr.today!.breakStart != null)
+                            Flexible(child: Padding(padding: const EdgeInsets.only(left: 8), child: _chip('B.Out', _shortTime(dtr.today!.breakStart!), AppColors.warning))),
+                          if (dtr.today!.breakEnd != null)
+                            Flexible(child: Padding(padding: const EdgeInsets.only(left: 8), child: _chip('B.In', _shortTime(dtr.today!.breakEnd!), AppColors.info))),
+                          Flexible(child: Padding(padding: const EdgeInsets.only(left: 8), child: _chip('Out', _shortTime(dtr.today!.clockOut ?? '--'), AppColors.danger))),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
+                      // Break buttons
+                      if (dtr.today!.isClockedIn && !dtr.today!.dayComplete) ...[
+                        if (dtr.today!.breakStart == null)
+                          _actionBtn('Break Out', AppColors.warning, Icons.free_breakfast, () async {
+                            final messenger = ScaffoldMessenger.of(context);
+                            final ok = await dtr.breakOut();
+                            if (ok) messenger.showSnackBar(SnackBar(content: Text(dtr.message ?? 'Break out!'), backgroundColor: AppColors.warning));
+                          })
+                        else if (dtr.today!.isOnBreak)
+                          _actionBtn('Break In', AppColors.info, Icons.login, () async {
+                            final messenger = ScaffoldMessenger.of(context);
+                            final ok = await dtr.breakIn();
+                            if (ok) messenger.showSnackBar(SnackBar(content: Text(dtr.message ?? 'Break in!'), backgroundColor: AppColors.info));
+                          }),
+                        const SizedBox(height: 12),
+                      ],
                     ],
                     ClockButton(
                       isClockedIn: dtr.today?.isClockedIn ?? false,
-                      isCompleted: dtr.today?.clockIn != null && dtr.today?.clockOut != null,
+                      isCompleted: dtr.today?.dayComplete ?? false,
                       loading: dtr.loading,
                       onClockIn: () async {
                         final messenger = ScaffoldMessenger.of(context);
@@ -230,6 +249,18 @@ class _DtrScreenState extends State<DtrScreen> {
         Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[500])),
         Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
       ],
+    );
+  }
+
+  Widget _actionBtn(String label, Color color, IconData icon, VoidCallback onTap) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon, size: 18),
+        label: Text(label),
+        style: OutlinedButton.styleFrom(foregroundColor: color, side: BorderSide(color: color)),
+      ),
     );
   }
 

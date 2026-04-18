@@ -27,7 +27,13 @@ class _LoansScreenState extends State<LoansScreen> {
     try {
       final res = await _dio.get('/loans');
       _loans = res.data['data'] ?? [];
-    } catch (_) {}
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load loans'), backgroundColor: AppColors.danger),
+        );
+      }
+    }
     setState(() => _loading = false);
   }
 

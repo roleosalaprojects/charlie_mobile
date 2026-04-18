@@ -27,7 +27,13 @@ class _PayslipsScreenState extends State<PayslipsScreen> {
     try {
       final res = await _dio.get('/payslips');
       _payslips = res.data['data'] ?? [];
-    } catch (_) {}
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to load payslips'), backgroundColor: AppColors.danger),
+        );
+      }
+    }
     setState(() => _loading = false);
   }
 
