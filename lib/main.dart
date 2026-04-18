@@ -16,6 +16,9 @@ import 'screens/loans/loans_screen.dart';
 import 'screens/overtime/file_overtime_screen.dart';
 import 'screens/expenses/file_expense_screen.dart';
 import 'screens/approvals/approvals_screen.dart';
+import 'screens/notifications/notifications_screen.dart';
+import 'screens/expenses/expenses_screen.dart';
+import 'screens/overtime/overtime_screen.dart';
 import 'utils/helpers.dart';
 
 void main() {
@@ -36,6 +39,7 @@ class CharlieApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: MaterialApp(
+        navigatorKey: ApiConfig.navigatorKey,
         title: 'Charlie HRMS',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -129,6 +133,9 @@ class CharlieApp extends StatelessWidget {
           '/file-overtime': (_) => const FileOvertimeScreen(),
           '/file-expense': (_) => const FileExpenseScreen(),
           '/approvals': (_) => const ApprovalsScreen(),
+          '/notifications': (_) => const NotificationsScreen(),
+          '/expenses': (_) => const ExpensesScreen(),
+          '/overtime': (_) => const OvertimeScreen(),
         },
       ),
     );

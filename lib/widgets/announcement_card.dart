@@ -76,7 +76,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
             Text(a.body, style: TextStyle(fontSize: 14, color: Colors.grey[700], height: 1.4)),
 
             // Image
-            if (a.imageUrl != null) ...[
+            if (a.imageUrl != null && a.imageUrl!.isNotEmpty) ...[
               const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),

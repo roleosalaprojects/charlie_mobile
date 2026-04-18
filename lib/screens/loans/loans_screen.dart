@@ -41,13 +41,13 @@ class _LoansScreenState extends State<LoansScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('My Loans')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _loans.isEmpty
-              ? const EmptyState(icon: Icons.money_off_outlined, title: 'No active loans')
-              : RefreshIndicator(
-                  onRefresh: _fetch,
-                  child: ListView.builder(
+      body: RefreshIndicator(
+        onRefresh: _fetch,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _loans.isEmpty
+                ? ListView(children: const [EmptyState(icon: Icons.money_off_outlined, title: 'No active loans')])
+                : ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: _loans.length,
                     itemBuilder: (_, i) {
@@ -103,7 +103,7 @@ class _LoansScreenState extends State<LoansScreen> {
                       );
                     },
                   ),
-                ),
+      ),
     );
   }
 

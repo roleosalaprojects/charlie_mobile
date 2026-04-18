@@ -1,12 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiConfig {
   static const String _defaultUrl = 'http://10.0.2.2:81/api/v1';
   static const storage = FlutterSecureStorage();
-
   static String? _cachedBaseUrl;
+
+  /// Global navigator key for 401 redirect
+  static final navigatorKey = GlobalKey<NavigatorState>();
 
   static Future<String> getBaseUrl() async {
     if (_cachedBaseUrl != null) return _cachedBaseUrl!;
@@ -15,7 +18,6 @@ class ApiConfig {
   }
 
   static Future<void> setBaseUrl(String url) async {
-    // Ensure it ends with /api/v1
     url = url.trimRight();
     if (url.endsWith('/')) url = url.substring(0, url.length - 1);
     if (!url.endsWith('/api/v1')) url = '$url/api/v1';
@@ -40,7 +42,6 @@ class ApiConfig {
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        // Ensure base URL is current
         final currentBase = await getBaseUrl();
         if (options.baseUrl != currentBase) {
           options.baseUrl = currentBase;
@@ -51,7 +52,12 @@ class ApiConfig {
         }
         return handler.next(options);
       },
-      onError: (error, handler) {
+      onError: (error, handler) async {
+        if (error.response?.statusCode == 401) {
+          // Token expired — clear and redirect to login
+          await clearToken();
+          navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (_) => false);
+        }
         return handler.next(error);
       },
     ));

@@ -41,13 +41,13 @@ class _PayslipsScreenState extends State<PayslipsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('My Payslips')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _payslips.isEmpty
-              ? EmptyState(icon: Icons.receipt_long_outlined, title: 'No payslips yet', onAction: _fetch)
-              : RefreshIndicator(
-                  onRefresh: _fetch,
-                  child: ListView.builder(
+      body: RefreshIndicator(
+        onRefresh: _fetch,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _payslips.isEmpty
+                ? ListView(children: const [EmptyState(icon: Icons.receipt_long_outlined, title: 'No payslips yet')])
+                : ListView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: _payslips.length,
                     itemBuilder: (_, i) {
@@ -66,7 +66,7 @@ class _PayslipsScreenState extends State<PayslipsScreen> {
                       );
                     },
                   ),
-                ),
+      ),
     );
   }
 

@@ -93,7 +93,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                   ),
                   confirmDismiss: (_) async {
                     if (la.status != 'pending') return false;
-                    return await showDialog<bool>(
+                    final confirm = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
                         title: const Text('Withdraw Leave?'),
@@ -104,8 +104,16 @@ class _LeaveScreenState extends State<LeaveScreen> {
                         ],
                       ),
                     );
+                    if (confirm != true) return false;
+                    final ok = await lp.withdraw(la.id);
+                    if (!ok && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(lp.error ?? 'Failed to withdraw'), backgroundColor: AppColors.danger),
+                      );
+                    }
+                    return ok;
                   },
-                  onDismissed: (_) => lp.withdraw(la.id),
+                  onDismissed: (_) {},
                   child: Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(

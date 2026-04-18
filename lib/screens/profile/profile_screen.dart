@@ -138,6 +138,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 12),
 
+          // About
+          ListTile(
+            leading: const Icon(Icons.info_outline, color: AppColors.gray),
+            title: const Text('About'),
+            trailing: const Icon(Icons.chevron_right),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            tileColor: Colors.grey[50],
+            onTap: () => showAboutDialog(
+              context: context,
+              applicationName: 'Charlie HRMS',
+              applicationVersion: '1.0.0',
+              applicationLegalese: 'All rights reserved.',
+              children: [
+                const SizedBox(height: 16),
+                const Text('A Philippine-localized Human Resource Management System for attendance tracking, leave management, and employee self-service.', style: TextStyle(fontSize: 13)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Version
+          Center(child: Text('v1.0.0', style: TextStyle(fontSize: 12, color: Colors.grey[400]))),
+          const SizedBox(height: 12),
+
           // Logout
           ListTile(
             leading: const Icon(Icons.logout, color: AppColors.danger),
