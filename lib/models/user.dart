@@ -51,14 +51,36 @@ class Employee {
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) {
+    // Handle both flat (login) and nested (me) formats
+    final assignment = _nested(json, ['current_employment', 'current_assignment']);
+
     return Employee(
       id: json['id'],
       employeeNo: json['employee_no'] ?? '',
-      fullName: json['full_name'] ?? '',
+      fullName: json['full_name'] ?? _buildName(json),
       photoUrl: json['photo_url'],
-      position: json['position'],
-      department: json['department'],
-      branch: json['branch'],
+      position: json['position'] ?? _nested(assignment, ['position', 'title']),
+      department: json['department'] ?? _nested(assignment, ['department', 'name']),
+      branch: json['branch'] ?? _nested(assignment, ['branch', 'name']),
     );
+  }
+
+  static dynamic _nested(dynamic obj, List<String> keys) {
+    dynamic current = obj;
+    for (final key in keys) {
+      if (current is Map) {
+        current = current[key];
+      } else {
+        return null;
+      }
+    }
+    return current;
+  }
+
+  static String _buildName(Map<String, dynamic> json) {
+    final first = json['first_name'] ?? '';
+    final last = json['last_name'] ?? '';
+    if (first.isEmpty && last.isEmpty) return '';
+    return '$first $last'.trim();
   }
 }
