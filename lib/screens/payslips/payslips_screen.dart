@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart' show Share, XFile;
 import '../../config/api.dart';
 import '../../utils/helpers.dart';
 import '../../widgets/empty_state.dart';
@@ -37,6 +40,23 @@ class _PayslipsScreenState extends State<PayslipsScreen> {
     setState(() => _loading = false);
   }
 
+  Future<void> _sharePayslip(dynamic payslip) async {
+    try {
+      final res = await _dio.get('/payslips/${payslip['id']}/download',
+          options: Options(responseType: ResponseType.bytes));
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/payslip_${payslip['id']}.txt');
+      await file.writeAsBytes(res.data);
+      await Share.shareXFiles([XFile(file.path)], text: 'Payslip');
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Download failed'), backgroundColor: AppColors.danger),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +81,11 @@ class _PayslipsScreenState extends State<PayslipsScreen> {
                           ),
                           title: Text('Net Pay: P${_fmt(p['net_pay'])}', style: const TextStyle(fontWeight: FontWeight.w600)),
                           subtitle: Text('Gross: P${_fmt(p['gross_pay'])} | Deductions: P${_fmt(p['total_deductions'])}', style: const TextStyle(fontSize: 12)),
-                          trailing: Text('${p['days_worked'] ?? 0} days', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.share_outlined, size: 20),
+                            tooltip: 'Share Payslip',
+                            onPressed: () => _sharePayslip(p),
+                          ),
                         ),
                       );
                     },

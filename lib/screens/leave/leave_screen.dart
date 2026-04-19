@@ -42,7 +42,16 @@ class _LeaveScreenState extends State<LeaveScreen> {
     final lp = context.watch<LeaveProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Leave')),
+      appBar: AppBar(
+        title: const Text('Leave'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_month_outlined),
+            tooltip: 'Team Calendar',
+            onPressed: () => Navigator.pushNamed(context, '/team-calendar'),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/file-leave'),
         backgroundColor: AppColors.primary,

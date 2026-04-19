@@ -19,6 +19,7 @@ import 'screens/approvals/approvals_screen.dart';
 import 'screens/notifications/notifications_screen.dart';
 import 'screens/expenses/expenses_screen.dart';
 import 'screens/overtime/overtime_screen.dart';
+import 'screens/leave/team_calendar_screen.dart';
 import 'utils/helpers.dart';
 
 void main() {
@@ -136,6 +137,7 @@ class CharlieApp extends StatelessWidget {
           '/notifications': (_) => const NotificationsScreen(),
           '/expenses': (_) => const ExpensesScreen(),
           '/overtime': (_) => const OvertimeScreen(),
+          '/team-calendar': (_) => const TeamCalendarScreen(),
         },
       ),
     );

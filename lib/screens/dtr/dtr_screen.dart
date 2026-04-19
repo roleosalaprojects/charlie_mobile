@@ -49,7 +49,20 @@ class _DtrScreenState extends State<DtrScreen> {
     final dtr = context.watch<DtrProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Attendance')),
+      appBar: AppBar(
+        title: const Text('Attendance'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.file_download_outlined),
+            tooltip: 'Export CSV',
+            onPressed: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              final ok = await dtr.exportDtr(month: _focusedDay.month, year: _focusedDay.year);
+              if (!ok) messenger.showSnackBar(const SnackBar(content: Text('Export failed')));
+            },
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           await dtr.fetchToday();

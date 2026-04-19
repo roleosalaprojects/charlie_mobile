@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart' show Share, XFile;
 import '../config/api.dart';
 import '../models/dtr.dart';
 
@@ -189,6 +192,24 @@ class DtrProvider extends ChangeNotifier {
           .toList();
     } catch (_) {
       return [];
+    }
+  }
+
+  /// Export DTR as CSV and share
+  Future<bool> exportDtr({required int month, required int year}) async {
+    try {
+      final res = await _dio.get('/dtr/export',
+          queryParameters: {'month': month, 'year': year},
+          options: Options(responseType: ResponseType.bytes));
+
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/dtr_${year}_$month.csv');
+      await file.writeAsBytes(res.data);
+
+      await Share.shareXFiles([XFile(file.path)], text: 'DTR Export - $month/$year');
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../config/api.dart';
@@ -38,6 +39,22 @@ class AnnouncementProvider extends ChangeNotifier {
     } catch (_) {
       _loading = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> post({required String title, required String body, bool isPinned = false, File? image}) async {
+    try {
+      final formData = FormData.fromMap({
+        'title': title,
+        'body': body,
+        'is_pinned': isPinned ? '1' : '0',
+        if (image != null) 'image': await MultipartFile.fromFile(image.path, filename: image.path.split('/').last),
+      });
+      await _dio.post('/announcements', data: formData, options: Options(contentType: 'multipart/form-data'));
+      await fetchFeed(refresh: true);
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 
