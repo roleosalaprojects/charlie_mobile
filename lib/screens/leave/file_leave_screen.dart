@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../providers/leave_provider.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/app_toast.dart';
 
 class FileLeaveScreen extends StatefulWidget {
   const FileLeaveScreen({super.key});
@@ -63,9 +64,7 @@ class _FileLeaveScreenState extends State<FileLeaveScreen> {
 
   Future<void> _submit() async {
     if (_selectedTypeId == null || _startDate == null || _endDate == null || _reasonCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields'), backgroundColor: AppColors.danger),
-      );
+      AppToast.warning(context, 'Please fill all fields');
       return;
     }
 
@@ -81,16 +80,12 @@ class _FileLeaveScreenState extends State<FileLeaveScreen> {
     if (!mounted) return;
 
     if (ok) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Leave application filed!'), backgroundColor: AppColors.success),
-      );
+      AppToast.success(context, 'Leave application filed', message: 'Awaiting approval.');
       lp.fetchBalances();
       lp.fetchApplications(refresh: true);
       Navigator.pop(context);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(lp.error ?? 'Failed'), backgroundColor: AppColors.danger),
-      );
+      AppToast.error(context, 'Failed to file leave', message: lp.error);
     }
   }
 

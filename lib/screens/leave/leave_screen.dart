@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/leave_provider.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/app_toast.dart';
 import '../../widgets/leave_balance_card.dart';
 
 class LeaveScreen extends StatefulWidget {
@@ -53,6 +54,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab-file-leave',
         onPressed: () => Navigator.pushNamed(context, '/file-leave'),
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
@@ -116,9 +118,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                     if (confirm != true) return false;
                     final ok = await lp.withdraw(la.id);
                     if (!ok && context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(lp.error ?? 'Failed to withdraw'), backgroundColor: AppColors.danger),
-                      );
+                      AppToast.error(context, 'Failed to withdraw', message: lp.error);
                     }
                     return ok;
                   },

@@ -7,6 +7,7 @@ class EmptyState extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onAction;
   final String? actionLabel;
+  final String? emoji;
 
   const EmptyState({
     super.key,
@@ -15,6 +16,7 @@ class EmptyState extends StatelessWidget {
     this.subtitle,
     this.onAction,
     this.actionLabel,
+    this.emoji,
   });
 
   @override
@@ -25,20 +27,42 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 64, color: Colors.grey[300]),
-            const SizedBox(height: 16),
-            Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[600]), textAlign: TextAlign.center),
+            Container(
+              width: 84,
+              height: 84,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.12),
+                    AppColors.accent.withValues(alpha: 0.12),
+                  ],
+                ),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: emoji != null
+                    ? Text(emoji!, style: const TextStyle(fontSize: 36))
+                    : Icon(icon, size: 36, color: AppColors.primary),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(title,
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                textAlign: TextAlign.center),
             if (subtitle != null) ...[
-              const SizedBox(height: 8),
-              Text(subtitle!, style: TextStyle(fontSize: 13, color: Colors.grey[400]), textAlign: TextAlign.center),
+              const SizedBox(height: 6),
+              Text(subtitle!,
+                  style: const TextStyle(fontSize: 13, color: AppColors.muted, height: 1.5),
+                  textAlign: TextAlign.center),
             ],
             if (onAction != null) ...[
               const SizedBox(height: 20),
               ElevatedButton.icon(
                 onPressed: onAction,
-                icon: const Icon(Icons.refresh, size: 18),
+                icon: const Icon(Icons.refresh_rounded, size: 18),
                 label: Text(actionLabel ?? 'Retry'),
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
               ),
             ],
           ],
@@ -57,9 +81,10 @@ class ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return EmptyState(
+      emoji: '😕',
       icon: Icons.wifi_off_rounded,
       title: message ?? 'Something went wrong',
-      subtitle: 'Please check your connection and try again.',
+      subtitle: 'Check your connection and try again.',
       onAction: onRetry,
       actionLabel: 'Retry',
     );

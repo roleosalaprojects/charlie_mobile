@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../config/api.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/app_toast.dart';
 
 class FileOvertimeScreen extends StatefulWidget {
   const FileOvertimeScreen({super.key});
@@ -27,14 +28,11 @@ class _FileOvertimeScreenState extends State<FileOvertimeScreen> {
 
   Future<void> _submit() async {
     if (_date == null || _startTime == null || _endTime == null || _reasonCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields'), backgroundColor: AppColors.danger),
-      );
+      AppToast.warning(context, 'Please fill all fields');
       return;
     }
 
     setState(() => _loading = true);
-    final messenger = ScaffoldMessenger.of(context);
     final nav = Navigator.of(context);
 
     try {
@@ -44,12 +42,14 @@ class _FileOvertimeScreenState extends State<FileOvertimeScreen> {
         'planned_end': '${_endTime!.hour.toString().padLeft(2, '0')}:${_endTime!.minute.toString().padLeft(2, '0')}',
         'reason': _reasonCtrl.text.trim(),
       });
-      messenger.showSnackBar(const SnackBar(content: Text('Overtime request filed!'), backgroundColor: AppColors.success));
+      if (!mounted) return;
+      AppToast.success(context, 'Overtime request filed', message: 'Awaiting manager approval.');
       nav.pop();
     } on DioException catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(e.response?.data?['message'] ?? 'Failed'), backgroundColor: AppColors.danger));
+      if (!mounted) return;
+      AppToast.error(context, 'Request failed', message: e.response?.data?['message']);
     }
-    setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
   }
 
   @override

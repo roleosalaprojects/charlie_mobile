@@ -36,6 +36,7 @@ class _OvertimeScreenState extends State<OvertimeScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('My Overtime Requests')),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab-file-overtime',
         onPressed: () async {
           await Navigator.pushNamed(context, '/file-overtime');
           _fetch();

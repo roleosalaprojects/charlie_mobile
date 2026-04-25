@@ -36,6 +36,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('My Expense Claims')),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab-file-expense',
         onPressed: () async {
           await Navigator.pushNamed(context, '/file-expense');
           _fetch();

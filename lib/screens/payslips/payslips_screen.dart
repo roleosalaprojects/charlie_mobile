@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart' show Share, XFile;
 import '../../config/api.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/app_toast.dart';
 import '../../widgets/empty_state.dart';
 
 class PayslipsScreen extends StatefulWidget {
@@ -31,11 +32,7 @@ class _PayslipsScreenState extends State<PayslipsScreen> {
       final res = await _dio.get('/payslips');
       _payslips = res.data['data'] ?? [];
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load payslips'), backgroundColor: AppColors.danger),
-        );
-      }
+      if (mounted) AppToast.error(context, 'Failed to load payslips');
     }
     setState(() => _loading = false);
   }
@@ -49,11 +46,7 @@ class _PayslipsScreenState extends State<PayslipsScreen> {
       await file.writeAsBytes(res.data);
       await Share.shareXFiles([XFile(file.path)], text: 'Payslip');
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Download failed'), backgroundColor: AppColors.danger),
-        );
-      }
+      if (mounted) AppToast.error(context, 'Download failed');
     }
   }
 

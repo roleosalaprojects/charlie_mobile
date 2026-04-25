@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../utils/helpers.dart';
-import '../dashboard/dashboard_screen.dart';
+import '../../widgets/status_strip.dart';
+import '../announcements/announcements_screen.dart';
 import '../dtr/dtr_screen.dart';
 import '../leave/leave_screen.dart';
-import '../announcements/announcements_screen.dart';
+import '../more/more_screen.dart';
 import '../profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,12 +18,26 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
   final _screens = const [
-    DashboardScreen(),
+    AnnouncementsScreen(),
     DtrScreen(),
     LeaveScreen(),
-    AnnouncementsScreen(),
+    MoreScreen(),
     ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    HomeScreenNavigator.register((index) {
+      if (mounted) setState(() => _currentIndex = index);
+    });
+  }
+
+  @override
+  void dispose() {
+    HomeScreenNavigator.unregister();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _navItem(0, Icons.home_outlined, Icons.home_rounded, 'Home'),
                 _navItem(1, Icons.access_time_outlined, Icons.access_time_filled, 'DTR'),
                 _navItem(2, Icons.event_note_outlined, Icons.event_note_rounded, 'Leave'),
-                _navItem(3, Icons.campaign_outlined, Icons.campaign_rounded, 'Feed'),
+                _navItem(3, Icons.grid_view_outlined, Icons.grid_view_rounded, 'More'),
                 _navItem(4, Icons.person_outline_rounded, Icons.person_rounded, 'Profile'),
               ],
             ),

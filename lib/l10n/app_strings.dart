@@ -34,10 +34,6 @@ class S {
   String get pending => '';
   String get approved => '';
   String get rejected => '';
-  String get clockIn => '';
-  String get clockOut => '';
-  String get breakOut => '';
-  String get breakIn => '';
   String get payslips => '';
   String get loans => '';
   String get overtime => '';
@@ -70,10 +66,6 @@ class _EnStrings extends S {
   @override String get pending => 'Pending';
   @override String get approved => 'Approved';
   @override String get rejected => 'Rejected';
-  @override String get clockIn => 'Clock In';
-  @override String get clockOut => 'Clock Out';
-  @override String get breakOut => 'Break Out';
-  @override String get breakIn => 'Break In';
   @override String get payslips => 'Payslips';
   @override String get loans => 'Loans';
   @override String get overtime => 'Overtime';
@@ -106,10 +98,6 @@ class _FilStrings extends S {
   @override String get pending => 'Naghihintay';
   @override String get approved => 'Aprubado';
   @override String get rejected => 'Tinanggihan';
-  @override String get clockIn => 'Pumasok';
-  @override String get clockOut => 'Umalis';
-  @override String get breakOut => 'Break Out';
-  @override String get breakIn => 'Break In';
   @override String get payslips => 'Payslip';
   @override String get loans => 'Utang';
   @override String get overtime => 'Overtime';

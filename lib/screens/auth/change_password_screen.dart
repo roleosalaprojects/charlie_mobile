@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/app_toast.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -25,15 +26,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _submit() async {
     if (_newCtrl.text.length < 8) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password must be at least 8 characters'), backgroundColor: AppColors.danger),
-      );
+      AppToast.warning(context, 'Password too short', message: 'Use at least 8 characters.');
       return;
     }
     if (_newCtrl.text != _confirmCtrl.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match'), backgroundColor: AppColors.danger),
-      );
+      AppToast.warning(context, 'Passwords do not match');
       return;
     }
 
@@ -43,14 +40,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password changed successfully!'), backgroundColor: AppColors.success),
-      );
+      AppToast.success(context, 'Password updated');
       Navigator.pushReplacementNamed(context, '/home');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(auth.error ?? 'Failed'), backgroundColor: AppColors.danger),
-      );
+      AppToast.error(context, 'Failed to change password', message: auth.error);
     }
   }
 

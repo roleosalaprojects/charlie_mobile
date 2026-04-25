@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../config/api.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/app_toast.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -38,7 +39,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final picked = await ImagePicker().pickImage(source: source, maxWidth: 800, imageQuality: 80);
     if (picked == null) return;
 
-    final messenger = ScaffoldMessenger.of(ctx);
     final authProv = ctx.read<AuthProvider>();
     try {
       final dio = ApiConfig.createDio();
@@ -46,10 +46,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'photo': await MultipartFile.fromFile(picked.path, filename: picked.name),
       });
       await dio.post('/profile/photo', data: formData, options: Options(contentType: 'multipart/form-data'));
-      messenger.showSnackBar(const SnackBar(content: Text('Photo updated!'), backgroundColor: AppColors.success));
+      if (!ctx.mounted) return;
+      AppToast.success(ctx, 'Photo updated');
       authProv.tryAutoLogin();
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(content: Text('Failed to upload photo'), backgroundColor: AppColors.danger));
+      if (!ctx.mounted) return;
+      AppToast.error(ctx, 'Failed to upload photo');
     }
   }
 
@@ -111,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               subtitle: const Text('Use fingerprint or Face ID'),
               value: auth.biometricEnabled,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              tileColor: Colors.grey[50],
+              tileColor: Theme.of(context).cardColor,
               onChanged: (v) => auth.setBiometricEnabled(v),
             ),
           if (auth.biometricAvailable) const SizedBox(height: 12),
@@ -122,44 +124,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: const Text('Change Password'),
             trailing: const Icon(Icons.chevron_right),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            tileColor: Colors.grey[50],
+            tileColor: Theme.of(context).cardColor,
             onTap: () => Navigator.pushNamed(context, '/change-password'),
           ),
 
-          // Server settings
+          // Settings (theme, server, about)
           const SizedBox(height: 12),
           ListTile(
-            leading: const Icon(Icons.dns_outlined, color: AppColors.gray),
-            title: const Text('Server Settings'),
+            leading: const Icon(Icons.settings_outlined, color: AppColors.gray),
+            title: const Text('Settings'),
             trailing: const Icon(Icons.chevron_right),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            tileColor: Colors.grey[50],
-            onTap: () => Navigator.pushNamed(context, '/server-config'),
+            tileColor: Theme.of(context).cardColor,
+            onTap: () => Navigator.pushNamed(context, '/settings'),
           ),
-          const SizedBox(height: 12),
-
-          // About
-          ListTile(
-            leading: const Icon(Icons.info_outline, color: AppColors.gray),
-            title: const Text('About'),
-            trailing: const Icon(Icons.chevron_right),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            tileColor: Colors.grey[50],
-            onTap: () => showAboutDialog(
-              context: context,
-              applicationName: 'Charlie HRMS',
-              applicationVersion: '1.0.0',
-              applicationLegalese: 'All rights reserved.',
-              children: [
-                const SizedBox(height: 16),
-                const Text('A Philippine-localized Human Resource Management System for attendance tracking, leave management, and employee self-service.', style: TextStyle(fontSize: 13)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Version
-          Center(child: Text('v1.0.0', style: TextStyle(fontSize: 12, color: Colors.grey[400]))),
           const SizedBox(height: 12),
 
           // Logout

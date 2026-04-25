@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../config/api.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/app_toast.dart';
 import '../../widgets/empty_state.dart';
 
 class ApprovalsScreen extends StatefulWidget {
@@ -49,13 +50,14 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> with SingleTickerProv
   }
 
   Future<void> _approve(String type, int id) async {
-    final messenger = ScaffoldMessenger.of(context);
     try {
       await _dio.post('/$type/$id/approve');
-      messenger.showSnackBar(const SnackBar(content: Text('Approved'), backgroundColor: AppColors.success));
+      if (!mounted) return;
+      AppToast.success(context, 'Approved');
       _fetchAll();
     } on DioException catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(e.response?.data?['message'] ?? 'Failed'), backgroundColor: AppColors.danger));
+      if (!mounted) return;
+      AppToast.error(context, 'Approval failed', message: e.response?.data?['message']);
     }
   }
 
@@ -76,10 +78,10 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> with SingleTickerProv
     );
     if (reason == null || reason.isEmpty) return;
 
-    final messenger = ScaffoldMessenger.of(context);
     try {
       await _dio.post('/$type/$id/reject', data: {'reason': reason});
-      messenger.showSnackBar(const SnackBar(content: Text('Rejected'), backgroundColor: AppColors.warning));
+      if (!mounted) return;
+      AppToast.warning(context, 'Rejected');
       _fetchAll();
     } catch (_) {}
   }

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../models/announcement.dart';
 import '../utils/helpers.dart';
+import 'image_viewer.dart';
 import 'reaction_bar.dart';
 import 'comment_section.dart';
 
@@ -28,23 +29,35 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppColors.softShadow,
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Pin badge
             if (a.isPinned)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    Icon(Icons.push_pin, size: 14, color: AppColors.warning),
-                    const SizedBox(width: 4),
-                    Text('Pinned', style: TextStyle(fontSize: 12, color: AppColors.warning, fontWeight: FontWeight.w600)),
-                  ],
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.push_pin_rounded, size: 12, color: AppColors.primary),
+                      SizedBox(width: 4),
+                      Text('Pinned', style: TextStyle(fontSize: 11, color: AppColors.primary, fontWeight: FontWeight.w700)),
+                    ],
+                  ),
                 ),
               ),
 
@@ -53,80 +66,89 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
               children: [
                 CircleAvatar(
                   radius: 20,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                   backgroundImage: a.author.photoUrl != null ? CachedNetworkImageProvider(a.author.photoUrl!) : null,
-                  child: a.author.photoUrl == null ? const Icon(Icons.person, size: 20) : null,
+                  child: a.author.photoUrl == null ? const Icon(Icons.person, size: 20, color: AppColors.primary) : null,
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(a.author.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                      Text(a.timeAgo, style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                      Text(a.author.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                      const SizedBox(height: 2),
+                      Text(a.timeAgo, style: const TextStyle(fontSize: 12, color: AppColors.muted)),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
 
-            // Title + Body
-            Text(a.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(a.title,
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, letterSpacing: -0.2, height: 1.3)),
             const SizedBox(height: 6),
-            Text(a.body, style: TextStyle(fontSize: 14, color: Colors.grey[700], height: 1.4)),
+            Text(a.body, style: const TextStyle(fontSize: 14, color: AppColors.muted, height: 1.55)),
 
-            // Image
             if (a.imageUrl != null && a.imageUrl!.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: CachedNetworkImage(
-                  imageUrl: a.imageUrl!,
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(height: 200, color: Colors.grey[200]),
-                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
+              const SizedBox(height: 14),
+              GestureDetector(
+                onTap: () => Navigator.of(context).push(
+                  ImageViewer.route(a.imageUrl!, 'announcement-image-${a.id}'),
+                ),
+                child: Hero(
+                  tag: 'announcement-image-${a.id}',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: CachedNetworkImage(
+                      imageUrl: a.imageUrl!,
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) => Container(height: 200, color: AppColors.lightBg),
+                      errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
                 ),
               ),
             ],
 
-            // Stats
             if (a.totalReactions > 0 || a.commentsCount > 0) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (a.totalReactions > 0)
-                    Text('${a.totalReactions} reaction${a.totalReactions > 1 ? 's' : ''}', style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                    Text('${a.totalReactions} reaction${a.totalReactions > 1 ? 's' : ''}',
+                        style: const TextStyle(fontSize: 12, color: AppColors.muted)),
                   if (a.commentsCount > 0)
                     GestureDetector(
                       onTap: () => setState(() => _showComments = !_showComments),
                       child: Text('${a.commentsCount} comment${a.commentsCount > 1 ? 's' : ''}',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                          style: const TextStyle(fontSize: 12, color: AppColors.muted, fontWeight: FontWeight.w600)),
                     ),
                 ],
               ),
             ],
-            const Divider(height: 24),
+            const SizedBox(height: 14),
+            Divider(height: 1, color: Colors.grey[200]),
+            const SizedBox(height: 12),
 
-            // Reactions
             ReactionBar(
               reactions: a.reactions,
               myReaction: a.myReaction,
               onReact: (type) => widget.onReact(a.id, type),
             ),
 
-            // Comments
             if (_showComments || a.comments.isNotEmpty) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               CommentSection(
                 comments: a.comments,
                 announcementId: a.id,
                 onComment: widget.onComment,
               ),
             ] else ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               CommentSection(
                 comments: const [],
                 announcementId: a.id,

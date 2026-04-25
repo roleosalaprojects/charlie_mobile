@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../../config/api.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/app_toast.dart';
 import '../../widgets/empty_state.dart';
 
 class LoansScreen extends StatefulWidget {
@@ -28,11 +29,7 @@ class _LoansScreenState extends State<LoansScreen> {
       final res = await _dio.get('/loans');
       _loans = res.data['data'] ?? [];
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load loans'), backgroundColor: AppColors.danger),
-        );
-      }
+      if (mounted) AppToast.error(context, 'Failed to load loans');
     }
     setState(() => _loading = false);
   }

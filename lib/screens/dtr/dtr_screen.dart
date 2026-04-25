@@ -4,7 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../models/dtr.dart';
 import '../../providers/dtr_provider.dart';
 import '../../utils/helpers.dart';
-import '../../widgets/clock_button.dart';
+import '../../widgets/app_toast.dart';
 
 class DtrScreen extends StatefulWidget {
   const DtrScreen({super.key});
@@ -56,9 +56,9 @@ class _DtrScreenState extends State<DtrScreen> {
             icon: const Icon(Icons.file_download_outlined),
             tooltip: 'Export CSV',
             onPressed: () async {
-              final messenger = ScaffoldMessenger.of(context);
               final ok = await dtr.exportDtr(month: _focusedDay.month, year: _focusedDay.year);
-              if (!ok) messenger.showSnackBar(const SnackBar(content: Text('Export failed')));
+              if (!context.mounted) return;
+              if (!ok) AppToast.error(context, 'Export failed');
             },
           ),
         ],
@@ -71,13 +71,16 @@ class _DtrScreenState extends State<DtrScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // Clock button
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    if (dtr.today != null && dtr.today!.clockIn != null) ...[
+            // Today's punches (read-only)
+            if (dtr.today != null && dtr.today!.clockIn != null)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Today', style: TextStyle(fontSize: 12, color: Colors.grey[500], fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -89,52 +92,27 @@ class _DtrScreenState extends State<DtrScreen> {
                           Flexible(child: Padding(padding: const EdgeInsets.only(left: 8), child: _chip('Out', _shortTime(dtr.today!.clockOut ?? '--'), AppColors.danger))),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      // Break buttons
-                      if (dtr.today!.isClockedIn && !dtr.today!.dayComplete) ...[
-                        if (dtr.today!.breakStart == null)
-                          _actionBtn('Break Out', AppColors.warning, Icons.free_breakfast, () async {
-                            final messenger = ScaffoldMessenger.of(context);
-                            final ok = await dtr.breakOut();
-                            if (ok) messenger.showSnackBar(SnackBar(content: Text(dtr.message ?? 'Break out!'), backgroundColor: AppColors.warning));
-                          })
-                        else if (dtr.today!.isOnBreak)
-                          _actionBtn('Break In', AppColors.info, Icons.login, () async {
-                            final messenger = ScaffoldMessenger.of(context);
-                            final ok = await dtr.breakIn();
-                            if (ok) messenger.showSnackBar(SnackBar(content: Text(dtr.message ?? 'Break in!'), backgroundColor: AppColors.info));
-                          }),
-                        const SizedBox(height: 12),
-                      ],
                     ],
-                    ClockButton(
-                      isClockedIn: dtr.today?.isClockedIn ?? false,
-                      isCompleted: dtr.today?.dayComplete ?? false,
-                      loading: dtr.loading,
-                      onClockIn: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final ok = await dtr.clockIn();
-                        if (ok) {
-                          messenger.showSnackBar(
-                            SnackBar(content: Text(dtr.message ?? 'Clocked in!'), backgroundColor: AppColors.success),
-                          );
-                        }
-                      },
-                      onClockOut: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final ok = await dtr.clockOut();
-                        if (ok) {
-                          messenger.showSnackBar(
-                            SnackBar(content: Text(dtr.message ?? 'Clocked out!'), backgroundColor: AppColors.success),
-                          );
-                          _loadMonth();
-                        }
-                      },
-                    ),
-                  ],
+                  ),
+                ),
+              )
+            else
+              Card(
+                color: AppColors.info.withValues(alpha: 0.08),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outline, color: AppColors.info, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text('Clock in/out at the office kiosk or web portal. This app is view-only for attendance.',
+                            style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
             const SizedBox(height: 16),
 
             // Calendar
@@ -262,18 +240,6 @@ class _DtrScreenState extends State<DtrScreen> {
         Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[500])),
         Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
       ],
-    );
-  }
-
-  Widget _actionBtn(String label, Color color, IconData icon, VoidCallback onTap) {
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton.icon(
-        onPressed: onTap,
-        icon: Icon(icon, size: 18),
-        label: Text(label),
-        style: OutlinedButton.styleFrom(foregroundColor: color, side: BorderSide(color: color)),
-      ),
     );
   }
 

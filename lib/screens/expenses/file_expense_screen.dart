@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../config/api.dart';
 import '../../utils/helpers.dart';
+import '../../widgets/app_toast.dart';
 
 class FileExpenseScreen extends StatefulWidget {
   const FileExpenseScreen({super.key});
@@ -50,12 +51,11 @@ class _FileExpenseScreenState extends State<FileExpenseScreen> {
 
   Future<void> _submit() async {
     if (_category == null || _date == null || _descCtrl.text.trim().isEmpty || _amountCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all fields'), backgroundColor: AppColors.danger));
+      AppToast.warning(context, 'Please fill all fields');
       return;
     }
 
     setState(() => _loading = true);
-    final messenger = ScaffoldMessenger.of(context);
     final nav = Navigator.of(context);
 
     try {
@@ -67,12 +67,14 @@ class _FileExpenseScreenState extends State<FileExpenseScreen> {
         if (_receipt != null) 'receipt': await MultipartFile.fromFile(_receipt!.path, filename: _receipt!.name),
       });
       await _dio.post('/expenses', data: formData, options: Options(contentType: 'multipart/form-data'));
-      messenger.showSnackBar(const SnackBar(content: Text('Expense claim submitted!'), backgroundColor: AppColors.success));
+      if (!mounted) return;
+      AppToast.success(context, 'Expense claim submitted', message: 'Your manager will review it shortly.');
       nav.pop();
     } on DioException catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(e.response?.data?['message'] ?? 'Failed'), backgroundColor: AppColors.danger));
+      if (!mounted) return;
+      AppToast.error(context, 'Submission failed', message: e.response?.data?['message']);
     }
-    setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
   }
 
   @override
