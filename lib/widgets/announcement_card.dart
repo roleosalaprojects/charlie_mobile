@@ -8,8 +8,8 @@ import 'comment_section.dart';
 
 class AnnouncementCard extends StatefulWidget {
   final Announcement announcement;
-  final Function(int id, String type) onReact;
-  final Function(int id, String body, {int? parentId}) onComment;
+  final Function(String uuid, String type) onReact;
+  final Function(String uuid, String body, {int? parentId}) onComment;
 
   const AnnouncementCard({
     super.key,
@@ -137,21 +137,21 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
             ReactionBar(
               reactions: a.reactions,
               myReaction: a.myReaction,
-              onReact: (type) => widget.onReact(a.id, type),
+              onReact: (type) => widget.onReact(a.uuid, type),
             ),
 
             if (_showComments || a.comments.isNotEmpty) ...[
               const SizedBox(height: 14),
               CommentSection(
                 comments: a.comments,
-                announcementId: a.id,
+                announcementId: a.uuid,
                 onComment: widget.onComment,
               ),
             ] else ...[
               const SizedBox(height: 10),
               CommentSection(
                 comments: const [],
-                announcementId: a.id,
+                announcementId: a.uuid,
                 onComment: widget.onComment,
                 inputOnly: true,
               ),

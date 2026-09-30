@@ -49,7 +49,7 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> with SingleTickerProv
     setState(() => _loading = false);
   }
 
-  Future<void> _approve(String type, int id) async {
+  Future<void> _approve(String type, String id) async {
     try {
       await _dio.post('/$type/$id/approve');
       if (!mounted) return;
@@ -61,7 +61,7 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> with SingleTickerProv
     }
   }
 
-  Future<void> _reject(String type, int id) async {
+  Future<void> _reject(String type, String id) async {
     final reason = await showDialog<String>(
       context: context,
       builder: (ctx) {
@@ -138,10 +138,10 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> with SingleTickerProv
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(onPressed: () => _reject(type, item['id']), child: const Text('Reject', style: TextStyle(color: AppColors.danger))),
+                      TextButton(onPressed: () => _reject(type, item['uuid']), child: const Text('Reject', style: TextStyle(color: AppColors.danger))),
                       const SizedBox(width: 8),
                       ElevatedButton(
-                        onPressed: () => _approve(type, item['id']),
+                        onPressed: () => _approve(type, item['uuid']),
                         style: ElevatedButton.styleFrom(backgroundColor: AppColors.success, foregroundColor: Colors.white),
                         child: const Text('Approve'),
                       ),

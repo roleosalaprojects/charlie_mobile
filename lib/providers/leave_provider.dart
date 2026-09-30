@@ -95,10 +95,10 @@ class LeaveProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> withdraw(int id) async {
+  Future<bool> withdraw(String uuid) async {
     try {
-      await _dio.post('/leaves/$id/withdraw');
-      _applications.removeWhere((a) => a.id == id);
+      await _dio.post('/leaves/$uuid/withdraw');
+      _applications.removeWhere((a) => a.uuid == uuid);
       notifyListeners();
       return true;
     } on DioException catch (e) {

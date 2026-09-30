@@ -39,10 +39,10 @@ class _PayslipsScreenState extends State<PayslipsScreen> {
 
   Future<void> _sharePayslip(dynamic payslip) async {
     try {
-      final res = await _dio.get('/payslips/${payslip['id']}/download',
+      final res = await _dio.get('/payslips/${payslip['uuid']}/download',
           options: Options(responseType: ResponseType.bytes));
       final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/payslip_${payslip['id']}.txt');
+      final file = File('${dir.path}/payslip_${payslip['uuid']}.txt');
       await file.writeAsBytes(res.data);
       await Share.shareXFiles([XFile(file.path)], text: 'Payslip');
     } catch (_) {

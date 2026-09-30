@@ -3,8 +3,8 @@ import '../models/announcement.dart';
 
 class CommentSection extends StatefulWidget {
   final List<AnnouncementComment> comments;
-  final int announcementId;
-  final Function(int id, String body, {int? parentId}) onComment;
+  final String announcementId;
+  final Function(String uuid, String body, {int? parentId}) onComment;
   final bool inputOnly;
 
   const CommentSection({

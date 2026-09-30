@@ -50,6 +50,7 @@ class LeaveType {
 
 class LeaveApplication {
   final int id;
+  final String uuid;
   final String? applicationNo;
   final int leaveTypeId;
   final String startDate;
@@ -62,6 +63,7 @@ class LeaveApplication {
 
   LeaveApplication({
     required this.id,
+    required this.uuid,
     this.applicationNo,
     required this.leaveTypeId,
     required this.startDate,
@@ -78,6 +80,7 @@ class LeaveApplication {
   factory LeaveApplication.fromJson(Map<String, dynamic> json) {
     return LeaveApplication(
       id: json['id'],
+      uuid: json['uuid'] ?? '',
       applicationNo: json['application_no'],
       leaveTypeId: json['leave_type_id'],
       startDate: json['start_date'] ?? '',

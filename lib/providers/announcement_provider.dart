@@ -58,16 +58,16 @@ class AnnouncementProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> react(int announcementId, String type) async {
+  Future<void> react(String announcementUuid, String type) async {
     try {
-      await _dio.post('/announcements/$announcementId/react', data: {'type': type});
+      await _dio.post('/announcements/$announcementUuid/react', data: {'type': type});
       await fetchFeed(refresh: true);
     } catch (_) {}
   }
 
-  Future<bool> comment(int announcementId, String body, {int? parentId}) async {
+  Future<bool> comment(String announcementUuid, String body, {int? parentId}) async {
     try {
-      await _dio.post('/announcements/$announcementId/comment', data: {
+      await _dio.post('/announcements/$announcementUuid/comment', data: {
         'body': body,
         if (parentId != null) 'parent_id': parentId,
       });

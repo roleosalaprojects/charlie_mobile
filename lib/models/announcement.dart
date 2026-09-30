@@ -1,5 +1,6 @@
 class Announcement {
   final int id;
+  final String uuid;
   final String title;
   final String body;
   final String? imageUrl;
@@ -14,6 +15,7 @@ class Announcement {
 
   Announcement({
     required this.id,
+    required this.uuid,
     required this.title,
     required this.body,
     this.imageUrl,
@@ -37,6 +39,7 @@ class Announcement {
 
     return Announcement(
       id: json['id'],
+      uuid: json['uuid'] ?? '',
       title: json['title'] ?? '',
       body: json['body'] ?? '',
       imageUrl: json['image_url'],

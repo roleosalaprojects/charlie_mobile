@@ -116,7 +116,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                       ),
                     );
                     if (confirm != true) return false;
-                    final ok = await lp.withdraw(la.id);
+                    final ok = await lp.withdraw(la.uuid);
                     if (!ok && context.mounted) {
                       AppToast.error(context, 'Failed to withdraw', message: lp.error);
                     }
