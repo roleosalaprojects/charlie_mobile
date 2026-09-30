@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart' show Share, XFile;
+import 'package:share_plus/share_plus.dart' show SharePlus, ShareParams, XFile;
 import '../../config/api.dart';
 import '../../utils/helpers.dart';
 import '../../widgets/app_toast.dart';
@@ -44,7 +44,7 @@ class _PayslipsScreenState extends State<PayslipsScreen> {
       final dir = await getTemporaryDirectory();
       final file = File('${dir.path}/payslip_${payslip['uuid']}.txt');
       await file.writeAsBytes(res.data);
-      await Share.shareXFiles([XFile(file.path)], text: 'Payslip');
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'Payslip'));
     } catch (_) {
       if (mounted) AppToast.error(context, 'Download failed');
     }

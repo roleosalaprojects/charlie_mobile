@@ -71,7 +71,7 @@ class _MoreScreenState extends State<MoreScreen> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: leave.balances.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  separatorBuilder: (_, _) => const SizedBox(width: 10),
                   itemBuilder: (_, i) => LeaveBalanceCard(balance: leave.balances[i]),
                 ),
               ),

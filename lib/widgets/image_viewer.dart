@@ -13,8 +13,8 @@ class ImageViewer extends StatelessWidget {
       opaque: false,
       barrierColor: Colors.black,
       transitionDuration: const Duration(milliseconds: 260),
-      pageBuilder: (_, __, ___) => ImageViewer(imageUrl: imageUrl, heroTag: heroTag),
-      transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
+      pageBuilder: (_, _, _) => ImageViewer(imageUrl: imageUrl, heroTag: heroTag),
+      transitionsBuilder: (_, anim, _, child) => FadeTransition(opacity: anim, child: child),
     );
   }
 
@@ -42,8 +42,8 @@ class ImageViewer extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: imageUrl,
                 fit: BoxFit.contain,
-                placeholder: (_, __) => const CircularProgressIndicator(color: Colors.white),
-                errorWidget: (_, __, ___) => const Icon(Icons.broken_image_outlined, size: 48, color: Colors.white54),
+                placeholder: (_, _) => const CircularProgressIndicator(color: Colors.white),
+                errorWidget: (_, _, _) => const Icon(Icons.broken_image_outlined, size: 48, color: Colors.white54),
               ),
             ),
           ),

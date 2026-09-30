@@ -42,7 +42,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       return await _localAuth.authenticate(
         localizedReason: 'Authenticate to access Charlie HRMS',
-        options: const AuthenticationOptions(biometricOnly: true),
+        biometricOnly: true,
       );
     } on PlatformException {
       return false;

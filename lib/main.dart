@@ -48,7 +48,7 @@ class CharlieApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: Consumer<ThemeProvider>(
-        builder: (_, theme, __) => MaterialApp(
+        builder: (_, theme, _) => MaterialApp(
           navigatorKey: ApiConfig.navigatorKey,
           title: 'Charlie HRMS',
           debugShowCheckedModeBanner: false,

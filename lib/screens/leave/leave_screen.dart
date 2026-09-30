@@ -77,7 +77,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: lp.balances.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  separatorBuilder: (_, _) => const SizedBox(width: 10),
                   itemBuilder: (_, i) => LeaveBalanceCard(balance: lp.balances[i]),
                 ),
               ),

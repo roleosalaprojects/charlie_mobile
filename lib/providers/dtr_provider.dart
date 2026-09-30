@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart' show Share, XFile;
+import 'package:share_plus/share_plus.dart' show SharePlus, ShareParams, XFile;
 import '../config/api.dart';
 import '../models/dtr.dart';
 
@@ -64,7 +64,7 @@ class DtrProvider extends ChangeNotifier {
       final file = File('${dir.path}/dtr_${year}_$month.csv');
       await file.writeAsBytes(res.data);
 
-      await Share.shareXFiles([XFile(file.path)], text: 'DTR Export - $month/$year');
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)], text: 'DTR Export - $month/$year'));
       return true;
     } catch (_) {
       return false;

@@ -69,7 +69,7 @@ class AnnouncementProvider extends ChangeNotifier {
     try {
       await _dio.post('/announcements/$announcementUuid/comment', data: {
         'body': body,
-        if (parentId != null) 'parent_id': parentId,
+        'parent_id': ?parentId,
       });
       // Re-fetch to show new comment
       await fetchFeed(refresh: true);

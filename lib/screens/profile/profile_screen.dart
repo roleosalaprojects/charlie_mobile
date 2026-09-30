@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (source == null) return;
 
     final picked = await ImagePicker().pickImage(source: source, maxWidth: 800, imageQuality: 80);
-    if (picked == null) return;
+    if (picked == null || !ctx.mounted) return;
 
     final authProv = ctx.read<AuthProvider>();
     try {
